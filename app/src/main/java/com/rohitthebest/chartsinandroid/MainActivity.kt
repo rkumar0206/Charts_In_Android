@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         growthList = ArrayList()
         populateGrowthList()
 
+        showBarGraph()
         initBarGraph()
     }
 
@@ -51,6 +52,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.barGraphBtn.setOnClickListener(this)
         binding.pieChartBtn.setOnClickListener(this)
+        binding.lineChartBtn.setOnClickListener(this)
+
     }
 
     override fun onClick(v: View?) {
@@ -70,37 +73,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 initPieGraph()
             }
+
+            binding.lineChartBtn.id -> {
+
+                showLineChart()
+
+                initLineChart()
+            }
         }
-    }
-
-    private fun initPieGraph() {
-
-        val pieEntries : ArrayList<PieEntry> = ArrayList()
-
-        growthList?.forEach {
-
-            pieEntries.add(PieEntry(it.growthRate, it.growthYear.toString()))
-
-        }
-
-        binding.pieChart.animateXY(4000, 4000)
-
-        val pieDataSet = PieDataSet(pieEntries, "Growth")
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 200)
-
-        val pieData = PieData(pieDataSet)
-
-        binding.pieChart.data = pieData
-
-        val description = Description()
-        description.text = "Growth rate per year"
-
-        binding.pieChart.description = description
-        binding.pieChart.centerText = "GROWTH"
-        //binding.pieChart.holeRadius = 30.0f
-
-        binding.pieChart.invalidate()
-
     }
 
     private fun initBarGraph() {
@@ -134,10 +114,66 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
+    private fun initPieGraph() {
+
+        val pieEntries: ArrayList<PieEntry> = ArrayList()
+
+        growthList?.forEach {
+
+            pieEntries.add(PieEntry(it.growthRate, it.growthYear.toString()))
+
+        }
+
+        binding.pieChart.animateXY(4000, 4000)
+
+        val pieDataSet = PieDataSet(pieEntries, "Growth")
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 200)
+
+        val pieData = PieData(pieDataSet)
+
+        binding.pieChart.data = pieData
+
+        val description = Description()
+        description.text = "Growth rate per year"
+
+        binding.pieChart.description = description
+        binding.pieChart.centerText = "GROWTH"
+        //binding.pieChart.holeRadius = 30.0f
+
+        binding.pieChart.invalidate()
+
+    }
+
+    private fun initLineChart() {
+
+        val lineEntries: ArrayList<Entry> = ArrayList()
+
+        growthList?.forEach {
+
+            lineEntries.add(Entry(it.growthYear.toFloat(), it.growthRate))
+        }
+
+        binding.lineChart.animateXY(4000, 400)
+
+        val lineDataSet = LineDataSet(lineEntries, "Growth")
+        lineDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 200)
+
+        val lineData = LineData(lineDataSet)
+
+        binding.lineChart.data = lineData
+
+        val description = Description()
+        description.text = "Growth rate per year"
+
+        binding.lineChart.description = description
+        binding.lineChart.invalidate()
+    }
+
     private fun showBarGraph() {
 
         binding.barChart.visibility = View.VISIBLE
         binding.pieChart.visibility = View.GONE
+        binding.lineChart.visibility = View.GONE
 
     }
 
@@ -145,9 +181,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.barChart.visibility = View.GONE
         binding.pieChart.visibility = View.VISIBLE
+        binding.lineChart.visibility = View.GONE
 
     }
 
+    private fun showLineChart() {
+
+        binding.barChart.visibility = View.GONE
+        binding.pieChart.visibility = View.GONE
+        binding.lineChart.visibility = View.VISIBLE
+
+    }
 
 }
 
