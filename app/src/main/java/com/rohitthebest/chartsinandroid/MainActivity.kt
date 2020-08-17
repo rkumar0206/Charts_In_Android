@@ -2,13 +2,16 @@ package com.rohitthebest.chartsinandroid
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.rohitthebest.chartsinandroid.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, OnChartValueSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
     private var growthList: ArrayList<Growth>? = null
@@ -53,7 +56,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.barGraphBtn.setOnClickListener(this)
         binding.pieChartBtn.setOnClickListener(this)
         binding.lineChartBtn.setOnClickListener(this)
-
+        binding.bubbleChartBtn.setOnClickListener(this)
+        binding.horizontalBarChartBtn.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -80,8 +84,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 initLineChart()
             }
+
+            binding.bubbleChartBtn.id -> {
+
+                showBubbleChart()
+
+                initBubbleChart()
+
+            }
+
+            binding.horizontalBarChartBtn.id -> {
+
+                showHorizontalBarChart()
+
+                initHorizontalBarChart()
+            }
+
         }
     }
+
 
     private fun initBarGraph() {
 
@@ -109,6 +130,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         description.text = "Growth rate per year"
 
         binding.barChart.description = description
+        binding.barChart.setOnChartValueSelectedListener(this)
         binding.barChart.invalidate()
 
 
@@ -139,6 +161,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.pieChart.description = description
         binding.pieChart.centerText = "GROWTH"
         //binding.pieChart.holeRadius = 30.0f
+        binding.pieChart.setOnChartValueSelectedListener(this)
 
         binding.pieChart.invalidate()
 
@@ -166,14 +189,84 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         description.text = "Growth rate per year"
 
         binding.lineChart.description = description
+        binding.lineChart.setOnChartValueSelectedListener(this)
         binding.lineChart.invalidate()
     }
+
+    private fun initBubbleChart() {
+
+        val bubbleEntry: ArrayList<BubbleEntry> = ArrayList()
+
+        growthList?.forEach {
+
+            bubbleEntry.add(BubbleEntry(it.growthYear.toFloat(), it.growthRate, 0.9f))
+
+        }
+
+        binding.bubbleChart.animateXY(4000, 4000)
+
+        val bubbleDataSet = BubbleDataSet(bubbleEntry, "Growth")
+        bubbleDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 200)
+
+        val bubbleData = BubbleData(bubbleDataSet)
+        binding.bubbleChart.data = bubbleData
+
+        val description = Description()
+        description.text = "Growth rate per year"
+
+        binding.bubbleChart.description = description
+        binding.bubbleChart.setOnChartValueSelectedListener(this)
+        binding.bubbleChart.invalidate()
+
+    }
+
+    private fun initHorizontalBarChart() {
+
+        val hBREntry: ArrayList<BarEntry> = ArrayList()
+
+        growthList?.forEach {
+
+            hBREntry.add(BarEntry(it.growthYear.toFloat(), it.growthRate))
+        }
+
+        binding.horizontalBarChart.animateXY(4000, 4000)
+
+        val hBRDataSet = BarDataSet(hBREntry, "Growth")
+        hBRDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 200)
+
+        val hbrData = BarData(hBRDataSet)
+
+        binding.horizontalBarChart.data = hbrData
+
+        val description = Description()
+        description.text = "Growth rate per year"
+
+        binding.horizontalBarChart.description = description
+        binding.horizontalBarChart.setOnChartValueSelectedListener(this)
+        binding.horizontalBarChart.invalidate()
+
+    }
+
+
+    override fun onNothingSelected() {
+
+
+    }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+
+        Toast.makeText(this@MainActivity, "${e?.x}, ${e?.y}", Toast.LENGTH_SHORT).show()
+
+    }
+
 
     private fun showBarGraph() {
 
         binding.barChart.visibility = View.VISIBLE
         binding.pieChart.visibility = View.GONE
         binding.lineChart.visibility = View.GONE
+        binding.bubbleChart.visibility = View.GONE
+        binding.horizontalBarChart.visibility = View.GONE
 
     }
 
@@ -182,6 +275,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.barChart.visibility = View.GONE
         binding.pieChart.visibility = View.VISIBLE
         binding.lineChart.visibility = View.GONE
+        binding.bubbleChart.visibility = View.GONE
+        binding.horizontalBarChart.visibility = View.GONE
 
     }
 
@@ -190,8 +285,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.barChart.visibility = View.GONE
         binding.pieChart.visibility = View.GONE
         binding.lineChart.visibility = View.VISIBLE
+        binding.bubbleChart.visibility = View.GONE
+        binding.horizontalBarChart.visibility = View.GONE
+
 
     }
+
+    private fun showBubbleChart() {
+
+        binding.barChart.visibility = View.GONE
+        binding.pieChart.visibility = View.GONE
+        binding.lineChart.visibility = View.GONE
+        binding.bubbleChart.visibility = View.VISIBLE
+        binding.horizontalBarChart.visibility = View.GONE
+
+    }
+
+
+    private fun showHorizontalBarChart() {
+
+        binding.barChart.visibility = View.GONE
+        binding.pieChart.visibility = View.GONE
+        binding.lineChart.visibility = View.GONE
+        binding.bubbleChart.visibility = View.GONE
+        binding.horizontalBarChart.visibility = View.VISIBLE
+
+    }
+
 
 }
 
